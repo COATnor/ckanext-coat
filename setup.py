@@ -21,7 +21,7 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/frafra/ckanext-coat',
+    url='https://gitlab.com/nina-data/ckanext-coat',
 
     # Author details
     author='''Francesco Frassinelli''',
