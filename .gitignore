@@ -40,3 +40,13 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
