@@ -11,7 +11,8 @@ def package_create(context, data_dict):
     data_dict['extras'].append(
         {'key': 'base_name', 'value': base_name},
     )
-    data_dict.setdefault('version', '1')
+    if not data_dict.get('version', False):
+        data_dict['version'] = '1'
     data_dict['name'] += '_v' + data_dict['version']
     package = ckan_package_create(context, data_dict)
     toolkit.get_action('dataset_version_create')(
