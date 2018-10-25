@@ -12,7 +12,17 @@ def package_create(context, data_dict):
         {'key': 'base_name', 'value': base_name},
     )
     if not data_dict.get('version', False):
-        data_dict['version'] = '1'
+        response = toolkit.get_action('package_search')(
+            context, {'fq_list': ['base_name:"%s"' % base_name]})
+        if response.get('results', []):
+            latest = response['results'][0]
+            try:
+                version = str(int(latest['version'])+1)
+            except ValueError:
+                version = '1'
+            data_dict['version'] = version
+        else:
+            data_dict['version'] = '1'
     data_dict['name'] += '_v' + data_dict['version']
     package = ckan_package_create(context, data_dict)
     toolkit.get_action('dataset_version_create')(
