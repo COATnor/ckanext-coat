@@ -1,6 +1,7 @@
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 import ckanext.coat.logic.action.create
+import ckanext.coat.logic.action.get
 
 
 class CoatPlugin(plugins.SingletonPlugin):
@@ -22,4 +23,8 @@ class CoatPlugin(plugins.SingletonPlugin):
             ckanext.coat.logic.action.create.ckan_package_create,
             'package_create':
             ckanext.coat.logic.action.create.package_create,
+            'ckan_package_search':
+            ckanext.coat.logic.action.get.ckan_package_search,
+            'package_search':
+            ckanext.coat.logic.action.get.package_search,
         }
