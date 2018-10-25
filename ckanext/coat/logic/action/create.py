@@ -4,16 +4,22 @@ from ckan.logic.action.create import package_create as ckan_package_create
 
 @toolkit.side_effect_free
 def package_create(context, data_dict):
+    if data_dict.get('__internal', False):
+        return ckan_package_create(context, data_dict)
+    base_name = data_dict['name']
+    data_dict.setdefault('extras', [])
+    data_dict['extras'].append(
+        {'key': 'base_name', 'value': base_name},
+    )
+    data_dict.setdefault('version', '1')
+    data_dict['name'] += '_v' + data_dict['version']
     package = ckan_package_create(context, data_dict)
-    if 'extras' not in data_dict:
-        return package  # saving meta-dataset
-    extras = {item['key']: item['value'] for item in data_dict['extras']}
-    if 'base_name' in extras:
-        toolkit.get_action('dataset_version_create')(
-            context, {
-                'id': package['id'],
-                'base_name': extras['base_name'],
-                'owner_org': data_dict['owner_org'],
-            }
-        )
+    toolkit.get_action('dataset_version_create')(
+        context, {
+            'id': package['id'],
+            'base_name': base_name,
+            'owner_org': data_dict['owner_org'],
+            '__internal': True,
+        }
+    )
     return package
