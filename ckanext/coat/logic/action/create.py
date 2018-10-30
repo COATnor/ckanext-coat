@@ -4,7 +4,7 @@ from ckan.logic.action.create import package_create as ckan_package_create
 
 @toolkit.side_effect_free
 def package_create(context, data_dict):
-    if data_dict.get('__internal', False):
+    if len(data_dict) <= 3:
         return ckan_package_create(context, data_dict)
     base_name = data_dict['name']
     data_dict.setdefault('extras', [])
@@ -30,7 +30,6 @@ def package_create(context, data_dict):
             'id': package['id'],
             'base_name': base_name,
             'owner_org': data_dict['owner_org'],
-            '__internal': True,
         }
     )
     return package
