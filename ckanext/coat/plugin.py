@@ -3,6 +3,8 @@ import ckan.plugins.toolkit as toolkit
 import ckanext.coat.logic.action.create
 import ckanext.coat.logic.action.get
 import ckanext.coat.logic.action.update
+from ckanext.coat import helpers
+import routes.mapper
 
 import requests
 
@@ -11,6 +13,7 @@ CKAN_SCHEMA = 'http://solr:8983/solr/ckan/schema'
 class CoatPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IActions)
+    plugins.implements(plugins.IRoutes, inherit=True)
 
     # IConfigurer
 
@@ -56,3 +59,10 @@ class CoatPlugin(plugins.SingletonPlugin):
             'package_update':
             ckanext.coat.logic.action.update.package_update,
         }
+
+    # IRouters
+
+    def after_map(self, _map):
+        with routes.mapper.SubMapper(_map, controller='ckanext.coat.controller:VersionController') as m:
+            m.connect('dataset.new_version', '/dataset/{uid}/new_version', action='new_version')
+        return _map

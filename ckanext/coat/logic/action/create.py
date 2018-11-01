@@ -1,6 +1,6 @@
 import ckan.plugins.toolkit as toolkit
 from ckan.logic.action.create import package_create as ckan_package_create
-
+from ckanext.coat.helpers import extras_dict
 
 @toolkit.side_effect_free
 def package_create(context, data_dict):
@@ -8,9 +8,10 @@ def package_create(context, data_dict):
         return ckan_package_create(context, data_dict)
     base_name = data_dict['name']
     data_dict.setdefault('extras', [])
-    data_dict['extras'].append(
-        {'key': 'base_name', 'value': base_name},
-    )
+    if 'base_name' not in extras_dict(data_dict):
+        data_dict['extras'].append(
+            {'key': 'base_name', 'value': base_name},
+         )
     if not data_dict.get('version', False):
         response = toolkit.get_action('package_search')(
             context, {'fq_list': ['base_name:"%s"' % base_name]})
