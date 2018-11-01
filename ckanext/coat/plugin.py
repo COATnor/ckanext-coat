@@ -4,6 +4,9 @@ import ckanext.coat.logic.action.create
 import ckanext.coat.logic.action.get
 import ckanext.coat.logic.action.update
 
+import requests
+
+CKAN_SCHEMA = 'http://solr:8983/solr/ckan/schema'
 
 class CoatPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
@@ -15,6 +18,26 @@ class CoatPlugin(plugins.SingletonPlugin):
         toolkit.add_template_directory(config_, 'templates')
         toolkit.add_public_directory(config_, 'public')
         toolkit.add_resource('fanstatic', 'coat')
+        self._custom_schema()
+
+    def _custom_schema(self):
+        response = requests.get(CKAN_SCHEMA+'/copyfields')
+        copyfields = response.json()['copyFields']
+        if {"dest": "version_i", "source": "version"} in copyfields:
+           return
+        requests.post(CKAN_SCHEMA, json={
+            "add-field":{
+                "name": "version_i",
+                "type": "int",
+                "stored": True,
+            }
+        })
+        requests.post(CKAN_SCHEMA, json={
+            "add-copy-field":{
+                "source": "version",
+                "dest": ["version_i"],
+            }
+        })
 
     # IActions
 
