@@ -1,2 +1,1 @@
 flask-debugtoolbar
-GitPython==2.1.11
