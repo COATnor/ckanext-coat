@@ -5,8 +5,9 @@ import ckan.plugins.toolkit as toolkit
 @toolkit.side_effect_free
 def package_update(context, data_dict):
     package = toolkit.get_action('package_show')(context, data_dict)
-    ckan_package_update(context, data_dict)
+    new_package = ckan_package_update(context, data_dict)
     if package['version'] != data_dict['version']:
         directory = git_archive.get_directory(context, package)
         git_archive.set_author(context, obj, directory)
         git_archive.new_release(obj, directory)
+    return new_package

@@ -10,6 +10,7 @@ class CoatPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IPackageController, inherit=True)
     plugins.implements(plugins.IResourceController, inherit=True)
     plugins.implements(plugins.IActions)
+    plugins.implements(plugins.ITemplateHelpers)
 
     # IConfigurer
 
@@ -28,6 +29,14 @@ class CoatPlugin(plugins.SingletonPlugin):
         else:
             git_archive.create_repository(obj, directory)
 
+    def after_update(self, context, obj):
+        directory = git_archive.get_directory(context, obj)
+        if helpers.is_resource(obj):
+            git_archive.set_author(context, obj, directory)
+            git_archive.add_file(obj, directory)
+        else:
+            pass
+
     def before_delete(self, context, uid, objs):
         for obj in objs:
             directory = git_archive.get_directory(context, obj)
@@ -45,4 +54,11 @@ class CoatPlugin(plugins.SingletonPlugin):
             ckanext.coat.logic.action.update.ckan_package_update,
             'package_update':
             ckanext.coat.logic.action.update.package_update,
+        }
+
+    # ITemplateHelpers
+
+    def get_helpers(self):
+        return {
+            'is_resource': ckanext.coat.helpers.is_resource,
         }
