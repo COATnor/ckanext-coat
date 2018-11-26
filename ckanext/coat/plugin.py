@@ -1,5 +1,6 @@
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
+import routes.mapper
 import ckanext.coat.logic.utils as utils
 import ckanext.coat.logic.action.update
 
@@ -10,6 +11,7 @@ class CoatPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IPackageController, inherit=True)
     plugins.implements(plugins.IResourceController, inherit=True)
     plugins.implements(plugins.IActions)
+    plugins.implements(plugins.IRoutes, inherit=True)
 
     # IConfigurer
 
@@ -61,3 +63,12 @@ class CoatPlugin(plugins.SingletonPlugin):
             'package_update':
             ckanext.coat.logic.action.update.package_update,
         }
+
+    # IRoutes
+
+    def before_map(self, routes_map):
+        controller = 'ckanext.coat.controllers:ArchiveController'
+        with routes.mapper.SubMapper(routes_map, controller=controller) as m:
+            m.connect('/dataset/archive/{uid}', action='index')
+            m.connect('/dataset/archive/{uid}/{path:.*?}/download', action='download')
+        return routes_map
