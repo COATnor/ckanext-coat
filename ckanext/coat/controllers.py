@@ -12,12 +12,30 @@ import pathlib
 import datetime
 import mimetypes
 import os.path
+import shutil
+import tempfile
 
 # duplicated definition
 storage_path = pathlib.Path(config.get('ckan.storage_path'))
 archive_path = storage_path / 'archive'
 
 class ArchiveController(toolkit.BaseController):
+    def _send_file(self, path, name):
+        # Similar to resource_download from ckan/controllers/package.py
+        fileapp = paste.fileapp.FileApp(path)
+        try:
+            status, headers, app_iter = request.call_application(fileapp)
+        except OSError:
+            base.abort(404, _('Resource data not found'))
+        response.headers.update(dict(headers))
+        content_type, content_enc = mimetypes.guess_type(path)
+        if content_type:
+            response.headers['Content-Type'] = content_type
+            response.status = status
+        response.headers['Content-Disposition'] = 'attachment; filename="%s"' % name
+        return app_iter
+        # FILESIZE MISSING
+
     def _get_versions(self, uid, directories=[]):
         base = archive_path / uid
         versions = []
@@ -66,16 +84,17 @@ class ArchiveController(toolkit.BaseController):
     def download(self, uid, path):
         pkg, pkg_dict = self._get_dataset(uid)  # check for permissions
         fullpath = str(archive_path / uid / path)
-        # Similar to resource_download from ckan/controllers/package.py
-        fileapp = paste.fileapp.FileApp(fullpath)
-        try:
-            status, headers, app_iter = request.call_application(fileapp)
-        except OSError:
-            base.abort(404, _('Resource data not found'))
-        response.headers.update(dict(headers))
-        content_type, content_enc = mimetypes.guess_type(path)
-        if content_type:
-            response.headers['Content-Type'] = content_type
-            response.status = status
-        response.headers['Content-Disposition'] = 'attachment; filename="%s"' % pathlib.Path(path).name
-        return app_iter
+        return self._send_file(fullpath, pathlib.Path(path).name)
+
+    def compress(self, uid, directory, version, compression):
+        pkg, pkg_dict = self._get_dataset(uid)  # check for permissions
+        extension = {
+            'zip': '.zip',
+            'gztar': '.tar.gz',
+            'bztar': '.tar.bz2',
+        }[compression]
+        path = str(archive_path / uid / directory / version)
+        with tempfile.NamedTemporaryFile() as fp:
+            shutil.make_archive(fp.name, compression, path)  # Python < 3.4 max 2 GB
+            return self._send_file(fp.name+extension, '%s-%s%s' % (uid, version, extension))
+            # REMOVE THE ZIP FILE!

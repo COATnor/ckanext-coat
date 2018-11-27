@@ -33,6 +33,10 @@
       </li>
     {% endfor %}
     </ul>
+    Download version (permalink):
+    {% for compression in ["zip", "gztar", "bztar"] %}
+      {% link_for compression, named_route='dataset.compress', uid=pkg.name, directory=version.directory, version=version.name, compression=compression, class_="label label-default" %}
+    {% endfor %}
   </li>
 {% endfor %}
 </ul>

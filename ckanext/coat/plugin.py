@@ -71,4 +71,5 @@ class CoatPlugin(plugins.SingletonPlugin):
         with routes.mapper.SubMapper(routes_map, controller=controller) as m:
             m.connect('dataset.archive', '/dataset/{uid}/archive', action='index')
             m.connect('dataset.download', '/dataset/{uid}/archive/{path:.*?}/download', action='download')
+            m.connect('dataset.compress', '/dataset/{uid}/archive/{directory}/{version}/compressed/{compression}', action='compress')
         return routes_map
