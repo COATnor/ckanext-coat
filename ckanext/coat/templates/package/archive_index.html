@@ -13,8 +13,17 @@
           <i class="fa fa-lock"></i>
           {{ _('Private') }}
         </span>
+        {% else %}
+        <span class="dataset-private label label-success">
+          <i class="fa fa-unlock"></i>
+          {{ _('Public') }}
+        </span>
+        <span class="dataset-private label label-primary">
+          <i class="fa fa-version"></i>
+          Version {{ version.name }}
+        </span>
         {% endif %}
-        {{ version.name }}
+        {{ h.render_datetime(version.mtime, "%c") }}
       </h3>
     </div>
     <ul class="dataset-resources list-unstyled">

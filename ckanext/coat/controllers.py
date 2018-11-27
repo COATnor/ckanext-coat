@@ -1,4 +1,5 @@
 from ckan.common import _, c, config, request, response
+from ckan.lib import helpers
 import ckan.lib.base as base
 import ckan.logic as logic
 import ckan.model as model
@@ -7,6 +8,8 @@ from ckan.plugins import toolkit
 import paste.fileapp
 
 import pathlib
+
+import datetime
 import mimetypes
 import os.path
 
@@ -26,12 +29,14 @@ class ArchiveController(toolkit.BaseController):
             files = []
             for filepath in absolute_path.glob('*'):
                 files.append(filepath.relative_to(base))
+            mtime = os.path.getmtime(str(absolute_path))
+            mtime = datetime.datetime.fromtimestamp(mtime)
             versions.append({
                 'directory': directory,
                 'files': files,
                 'path': path,
                 'name': name,
-                'mtime': os.path.getmtime(str(absolute_path)),
+                'mtime': mtime,
             })
         versions.sort(key=lambda v: v['mtime'], reverse=True)
         return versions
@@ -55,6 +60,7 @@ class ArchiveController(toolkit.BaseController):
         return base.render(template, extra_vars={
             'pkg_dict': pkg_dict,
             'versions': self._get_versions(uid, directories),
+            'h': helpers,
         })
 
     def download(self, uid, path):
