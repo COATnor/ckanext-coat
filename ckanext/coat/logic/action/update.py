@@ -7,6 +7,6 @@ def package_update(context, data_dict):
     package_old = toolkit.get_action('package_show')(context, data_dict)
     package_new = ckan_package_update(context, data_dict)
     if package_old['version'] != package_new['version']:
-        dst_path = utils.get_dst_path(context, obj)
-        utils.new_release(dst_path, pakcage_new['version'])
+        dst_path = utils.get_dst_path(context, package_new)
+        utils.new_release(dst_path, package_new['version'])
     return package_new
