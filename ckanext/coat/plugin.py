@@ -69,6 +69,6 @@ class CoatPlugin(plugins.SingletonPlugin):
     def before_map(self, routes_map):
         controller = 'ckanext.coat.controllers:ArchiveController'
         with routes.mapper.SubMapper(routes_map, controller=controller) as m:
-            m.connect('dataset.revisions', '/dataset/{uid}/revisions', action='revisions')
-            m.connect('dataset.download', '/dataset/{uid}/{path:.*?}/download', action='download')
+            m.connect('dataset.archive', '/dataset/{uid}/archive', action='index')
+            m.connect('dataset.download', '/dataset/{uid}/archive/{path:.*?}/download', action='download')
         return routes_map

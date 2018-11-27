@@ -8,31 +8,33 @@ import paste.fileapp
 
 import pathlib
 import mimetypes
+import os.path
 
 # duplicated definition
 storage_path = pathlib.Path(config.get('ckan.storage_path'))
 archive_path = storage_path / 'archive'
 
 class ArchiveController(toolkit.BaseController):
-    def _get_revisions(self, uid):
-        revisions = []
-        directories = list((archive_path / uid).glob('revisions/*/'))
-        directories.sort(reverse=True)
-        for directory in directories:
-            relative = directory.relative_to(archive_path)
+    def _get_versions(self, uid, directories=[]):
+        base = archive_path / uid
+        versions = []
+        for absolute_path in base.glob('*/*'):
+            path = absolute_path.relative_to(base)
+            directory, name = str(path).split('/')
+            if directory not in directories:
+                continue
             files = []
-            for obj in directory.glob('*'):
-                files.append({
-                    'name': obj.name,
-                    'path': str(obj.relative_to(archive_path / uid)),
-                })
-            revisions.append({
-                'name': directory.name,
+            for filepath in absolute_path.glob('*'):
+                files.append(filepath.relative_to(base))
+            versions.append({
+                'directory': directory,
                 'files': files,
-                'url': relative,
-                'private': True,
+                'path': path,
+                'name': name,
+                'mtime': os.path.getmtime(str(absolute_path)),
             })
-        return revisions
+        versions.sort(key=lambda v: v['mtime'], reverse=True)
+        return versions
 
     def _get_dataset(self, uid):
         context = {'model': model, 'session': model.Session,
@@ -46,12 +48,13 @@ class ArchiveController(toolkit.BaseController):
             base.abort(404, _('Dataset not found'))
         return pkg, pkg_dict
 
-    def revisions(self, uid):
+    def index(self, uid):
         pkg, pkg_dict = self._get_dataset(uid)
         template = "package/archive_index.html"
+        directories = ["revisions", "releases"]
         return base.render(template, extra_vars={
             'pkg_dict': pkg_dict,
-            'revisions': self._get_revisions(uid),
+            'versions': self._get_versions(uid, directories),
         })
 
     def download(self, uid, path):

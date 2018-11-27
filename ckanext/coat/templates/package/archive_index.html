@@ -4,23 +4,23 @@
 
 {% block primary_content_inner %}
 <ul class="{{ list_class or 'dataset-list list-unstyled' }}">
-{% for revision in revisions %}
+{% for version in versions %}
   <li class="{{ item_class or "dataset-item" }}">
     <div class="dataset-content">
       <h3 class="dataset-heading">
-        {% if revision.private %}
+        {% if version.directory == 'revisions' %}
         <span class="dataset-private label label-inverse">
           <i class="fa fa-lock"></i>
           {{ _('Private') }}
         </span>
         {% endif %}
-        {{ revision.name }}
+        {{ version.name }}
       </h3>
     </div>
     <ul class="dataset-resources list-unstyled">
-    {% for file in revision.files %}
+    {% for file in version.files %}
       <li>
-        {% link_for file.name, named_route='dataset.download', uid=pkg.name, path=file.path, class_="label label-default" %}
+        {% link_for file.name, named_route='dataset.download', uid=pkg.name, path=file, class_="label label-default" %}
       </li>
     {% endfor %}
     </ul>
