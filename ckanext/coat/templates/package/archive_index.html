@@ -20,7 +20,7 @@
     <ul class="dataset-resources list-unstyled">
     {% for file in revision.files %}
       <li>
-        <a href="{{ file.url }}" class="label label-default">{{ file.name }}</a>
+        {% link_for file.name, named_route='dataset.download', uid=pkg.name, path=file.path, class_="label label-default" %}
       </li>
     {% endfor %}
     </ul>

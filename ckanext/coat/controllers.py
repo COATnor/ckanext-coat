@@ -24,7 +24,7 @@ class ArchiveController(toolkit.BaseController):
             for obj in directory.glob('*'):
                 files.append({
                     'name': obj.name,
-                    'url': '%s/download' % obj.relative_to(archive_path),
+                    'path': str(obj.relative_to(archive_path / uid)),
                 })
             revisions.append({
                 'name': directory.name,
@@ -46,7 +46,7 @@ class ArchiveController(toolkit.BaseController):
             base.abort(404, _('Dataset not found'))
         return pkg, pkg_dict
 
-    def index(self, uid):
+    def revisions(self, uid):
         pkg, pkg_dict = self._get_dataset(uid)
         template = "package/archive_index.html"
         return base.render(template, extra_vars={
