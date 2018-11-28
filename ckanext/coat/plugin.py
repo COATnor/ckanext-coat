@@ -29,13 +29,18 @@ class CoatPlugin(plugins.SingletonPlugin):
                 return
             src, dst = utils.get_src_dst(context, obj)
             os.link(str(src), str(dst))
+            if not utils.get_extra(obj, 'mirrored'):
+                utils.new_revision(dst_path)
         else:
             rev_path = dst_path / '..' / 'revisions'
             rel_path = dst_path / '..' / 'releases'
             os.makedirs(str(dst_path))
             os.makedirs(str(rev_path))
             os.makedirs(str(rel_path))
-        utils.new_revision(dst_path)
+            if 'version' in obj:
+                utils.new_release(dst_path)
+            elif not utils.get_extra(obj, 'mirrored'):
+                utils.new_revision(dst_path)
 
     def after_update(self, context, obj):
         if utils.is_resource(obj):
@@ -50,7 +55,8 @@ class CoatPlugin(plugins.SingletonPlugin):
                 src, dst = utils.get_src_dst(context, obj)
                 if dst.is_file():
                     os.remove(str(dst))
-                utils.new_revision(dst_path)
+                if not utils.get_extra(obj, 'mirrored'):
+                    utils.new_revision(dst_path)
             else:
                 pass # empty repo?
 

@@ -17,6 +17,12 @@ def copytree_hard(src, dst):
 storage_path = pathlib.Path(ckan.common.config.get('ckan.storage_path'))
 archive_path = storage_path / 'archive'
 
+def get_extra(pkg, value, default=None):
+    if 'extras' in pkg:
+        extras = {d['key']: d['value'] for d in pkg['extras']}
+        return extras.get(value, default)
+    return default
+
 def is_resource(obj):
     return 'package_id' in obj
 
