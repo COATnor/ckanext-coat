@@ -39,7 +39,7 @@ def package_update(context, data_dict):
     # Syncronize the public dataset
 
     public_name = utils.get_extra(package_new, 'push_releases_to')
-    if not public_name:
+    if not public_name or public_name == package_new['name']:
         return package_new
 
     public_dict = copy.deepcopy(package_new)
