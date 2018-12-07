@@ -5,6 +5,8 @@ import ckan.common
 
 import copy
 import datetime
+import io
+import json
 import os
 import pathlib
 import shutil
@@ -147,3 +149,7 @@ def sync(context, package_new):
             })
         resource['package_id'] = public['id']
         toolkit.get_action('resource_create')(context, resource)
+
+def update_metadata(dst_path, data_dict):
+    with io.open(str(dst_path / 'metadata.json'), 'w', newline='\r\n', encoding='utf-8') as stream:
+        stream.write(unicode(json.dumps(data_dict, ensure_ascii=False)))

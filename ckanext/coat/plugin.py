@@ -29,8 +29,6 @@ class CoatPlugin(plugins.SingletonPlugin):
                 return
             src, dst = utils.get_src_dst(context, obj)
             os.link(str(src), str(dst))
-            if not utils.is_mirrored(context, obj):
-                utils.new_revision(dst_path)
         else:
             rev_path = dst_path / '..' / 'revisions'
             rel_path = dst_path / '..' / 'releases'
@@ -38,12 +36,15 @@ class CoatPlugin(plugins.SingletonPlugin):
             os.makedirs(str(rel_path))
             if utils.is_mirrored(context, obj):
                 os.rmdir(str(dst_path))
+                return
             if obj.get('state', '').startswith('draft'):
                 return
             if obj.get('version'):
+                utils.update_metadata(dst_path, obj)
                 utils.sync(context, obj)
                 utils.new_release(dst_path, obj['version'])
             else:
+                utils.update_metadata(dst_path, obj)
                 utils.new_revision(dst_path)
 
     def after_update(self, context, obj):

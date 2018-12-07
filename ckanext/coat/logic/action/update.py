@@ -11,6 +11,9 @@ def package_update(context, data_dict):
     package_new = ckan_package_update(context, data_dict)
     if utils.is_mirrored(context, data_dict):
         return package_new
+    dst_path = utils.get_dst_path(context, package_new)
+    utils.update_metadata(dst_path, package_new)
+    utils.new_revision(dst_path)
     if (package_old.get('state', '').startswith('draft') and
         package_new.get('state') == 'active' and
         package_new['version']) or \
