@@ -89,6 +89,8 @@ def sync(context, package_new):
     public_name = get_extra(package_new, 'push_releases_to')
     if not public_name or public_name == package_new['name']:
         return package_new
+    if package_new.get('state', '').startswith('draft'):
+        return package_new
 
     public_dict = copy.deepcopy(package_new)
     public_extras = [
@@ -122,6 +124,7 @@ def sync(context, package_new):
         public_dict['resources'] = []
         public = toolkit.get_action('package_update')(context, public_dict)
     else:
+        public_dict['resources'] = []
         public = toolkit.get_action('package_create')(context, public_dict)
     src_path = archive_path / package_new['name'] / 'releases' / package_new['version']
     dst_path = get_dst_path(context, public)

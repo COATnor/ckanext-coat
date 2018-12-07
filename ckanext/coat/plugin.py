@@ -34,10 +34,11 @@ class CoatPlugin(plugins.SingletonPlugin):
         else:
             rev_path = dst_path / '..' / 'revisions'
             rel_path = dst_path / '..' / 'releases'
-            os.makedirs(str(dst_path))
             os.makedirs(str(rev_path))
             os.makedirs(str(rel_path))
             if utils.is_mirrored(context, obj):
+                os.rmdir(str(dst_path))
+            if obj.get('state', '').startswith('draft'):
                 return
             if obj.get('version'):
                 utils.sync(context, obj)
