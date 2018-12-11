@@ -2,7 +2,6 @@ import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 import ckanext.coat.logic.action.create
 import ckanext.coat.logic.action.get
-import ckanext.coat.logic.action.update
 from ckanext.coat import helpers
 import routes.mapper
 
@@ -54,10 +53,6 @@ class CoatPlugin(plugins.SingletonPlugin):
             ckanext.coat.logic.action.get.ckan_package_search,
             'package_search':
             ckanext.coat.logic.action.get.package_search,
-            'ckan_package_update':
-            ckanext.coat.logic.action.update.ckan_package_update,
-            'package_update':
-            ckanext.coat.logic.action.update.package_update,
         }
 
     # IRouters
