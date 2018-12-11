@@ -14,8 +14,8 @@ def package_create(context, data_dict):
          )
     if not data_dict.get('version', False):
         response = toolkit.get_action('package_search')(
-            context, {'fq_list': ['base_name:"%s"' % base_name]})
-        if response.get('results', []):
+            context, {'q': 'base_name:"%s"' % base_name})
+        if response['count'] > 0:
             latest = response['results'][0]
             try:
                 version = str(int(latest['version'])+1)
