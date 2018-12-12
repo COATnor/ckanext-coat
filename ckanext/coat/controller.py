@@ -36,6 +36,7 @@ class VersionController(toolkit.BaseController):
             'medatata_modified': datetime.datetime.now(),
             'name': extras_dict(package)['base_name'],
             'version': str(int(package.get('version', '0'))+1),
+            'private': True,
         })
 
         # save the package
