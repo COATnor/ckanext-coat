@@ -29,6 +29,8 @@ def package_create(context, data_dict):
                 data_dict['version'] = '1'
         else:
             data_dict['version'] = '1'
+
+    # append version to the name (it has to be unique)
     data_dict['name'] += '_v' + data_dict['version']
 
     # create package and version

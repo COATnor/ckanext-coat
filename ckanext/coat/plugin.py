@@ -2,6 +2,8 @@ import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 import ckanext.coat.logic.action.create
 import ckanext.coat.logic.action.get
+import ckanext.coat.logic.action.update
+import ckanext.coat.logic.action.delete
 from ckanext.coat import helpers
 import routes.mapper
 
@@ -12,6 +14,7 @@ CKAN_SCHEMA = 'http://solr:8983/solr/ckan/schema'
 class CoatPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IActions)
+    plugins.implements(plugins.IResourceController, inherit=True)
     plugins.implements(plugins.IRoutes, inherit=True)
 
     # IConfigurer
@@ -53,7 +56,23 @@ class CoatPlugin(plugins.SingletonPlugin):
             ckanext.coat.logic.action.get.ckan_package_search,
             'package_search':
             ckanext.coat.logic.action.get.package_search,
+            'ckan_package_update':
+            ckanext.coat.logic.action.update.ckan_package_update,
+            'package_update':
+            ckanext.coat.logic.action.update.package_update,
+            'ckan_package_delete':
+            ckanext.coat.logic.action.delete.ckan_package_delete,
+            'package_delete':
+            ckanext.coat.logic.action.delete.package_delete,
         }
+
+    # IPackageController / IResourceController
+
+    def before_update(self, context, obj, *args, **kwargs):
+        helpers.check_if_protected(obj)
+
+    def before_delete(self, context, obj, *args, **kwargs):
+        helpers.check_if_protected(obj)
 
     # IRouters
 

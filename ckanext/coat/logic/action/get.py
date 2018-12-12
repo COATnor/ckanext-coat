@@ -1,5 +1,6 @@
 import ckan.plugins.toolkit as toolkit
 from ckan.logic.action.get import package_search as ckan_package_search
+from ckanext.coat import helpers
 
 
 @toolkit.side_effect_free

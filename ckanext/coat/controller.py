@@ -1,10 +1,9 @@
 import ckan.plugins.toolkit as toolkit
 import ckan.logic as logic
 import ckan.lib.base as base
-import ckan.model as model
 import ckan.lib.helpers as h
-from ckan.common import g, _
-from ckanext.coat.helpers import extras_dict
+from ckan.common import _
+from ckanext.coat.helpers import extras_dict, new_context
 from ckanext.datasetversions.helpers import get_context
 
 import copy
@@ -13,9 +12,7 @@ import datetime
 
 class VersionController(toolkit.BaseController):
     def new_version(self, uid):
-        context = {'model': model, 'session': model.Session,
-                   'user': g.user, 'for_view': True,
-                   'auth_user_obj': g.userobj}
+        context = new_context()
         data_dict = {'id': uid}
 
         # check if package exists
@@ -24,8 +21,8 @@ class VersionController(toolkit.BaseController):
         except (logic.NotFound, logic.NotAuthorized):
             base.abort(404, _('Dataset not found'))
 
-        context = get_context(context)
         resources = package['resources']
+        context = get_context(context)  # needed ?
 
         # remove references to the original package
         for key in ('id', 'revision_id'):
@@ -57,10 +54,5 @@ class VersionController(toolkit.BaseController):
                 'url_type': 'url_to_resource',  # link, not upload file field
             })
             toolkit.get_action('resource_create')(context, resource)
-            # protect the old resource
-            if original_resource.get('url_type').startswith('upload'):
-                original_resource.setdefault('extras', {})
-                original_resource['extras']['protected'] = True
-            toolkit.get_action('resource_update')(context, original_resource)
 
         h.redirect_to(controller='package', action='read', id=package_new['id'])  # not working
