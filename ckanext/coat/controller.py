@@ -3,18 +3,19 @@ import ckan.logic as logic
 import ckan.lib.base as base
 import ckan.model as model
 import ckan.lib.helpers as h
-from ckan.common import c, _
+from ckan.common import g, _
 from ckanext.coat.helpers import extras_dict
 from ckanext.datasetversions.helpers import get_context
 
+import copy
 import datetime
 
 
 class VersionController(toolkit.BaseController):
     def new_version(self, uid):
         context = {'model': model, 'session': model.Session,
-                   'user': c.user, 'for_view': True,
-                   'auth_user_obj': c.userobj}
+                   'user': g.user, 'for_view': True,
+                   'auth_user_obj': g.userobj}
         data_dict = {'id': uid}
 
         # check if package exists
@@ -23,14 +24,43 @@ class VersionController(toolkit.BaseController):
         except (logic.NotFound, logic.NotAuthorized):
             base.abort(404, _('Dataset not found'))
 
-        # Remove references to the original package
-        del package['id']
-        del package['revision_id']
         context = get_context(context)
+        resources = package['resources']
 
-        package['metadata_created'] = datetime.datetime.now()
-        package['metadata_modified'] = package['metadata_created']
-        package['name'] = extras_dict(package)['base_name']
-        package['version'] = str(int(package.get('version', "0"))+1)
+        # remove references to the original package
+        for key in ('id', 'revision_id'):
+            if key in package:
+                del package[key]
+
+        # update the new package values
+        package.update({
+            'resources': [],
+            'metadata_created': datetime.datetime.now(),
+            'medatata_modified': datetime.datetime.now(),
+            'name': extras_dict(package)['base_name'],
+            'version': str(int(package.get('version', '0'))+1),
+        })
+
+        # save the package
         package_new = toolkit.get_action('package_create')(context, package)
-        h.redirect_to(controller='package', action='edit', id=package_new['id'])
+
+        # populate the new package with the old resources
+        for original_resource in resources:
+            # clone the resource
+            resource = copy.deepcopy(original_resource)
+            for key in ('id', 'revision_id'):
+                if key in resource:
+                    del resource[key]
+            # modify the new resource
+            resource.update({
+                'package_id': package_new['id'],
+                'url_type': 'url_to_resource',  # link, not upload file field
+            })
+            toolkit.get_action('resource_create')(context, resource)
+            # protect the old resource
+            if original_resource.get('url_type').startswith('upload'):
+                original_resource.setdefault('extras', {})
+                original_resource['extras']['protected'] = True
+            toolkit.get_action('resource_update')(context, original_resource)
+
+        h.redirect_to(controller='package', action='read', id=package_new['id'])  # not working
