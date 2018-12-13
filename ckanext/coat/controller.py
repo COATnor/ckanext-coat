@@ -25,7 +25,7 @@ class VersionController(toolkit.BaseController):
         context = get_context(context)  # needed ?
 
         # remove references to the original package
-        for key in ('id', 'revision_id'):
+        for key in ('id', 'revision_id', 'version'):
             if key in package:
                 del package[key]
 
@@ -36,7 +36,6 @@ class VersionController(toolkit.BaseController):
             'metadata_created': datetime.datetime.now(),
             'medatata_modified': datetime.datetime.now(),
             'name': base_name,
-            'version': str(int(package.get('version', '0'))+1),
             'private': True,
         })
 
