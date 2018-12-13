@@ -32,5 +32,5 @@ def is_public(package):
 
 def is_protected(obj):
     package = get_package(obj)
-    if is_old(package):
-        raise logic.NotAuthorized
+    if is_old(package) or not is_public(package):
+        raise logic.NotAuthorized('Public and old datasets cannot be modified')
