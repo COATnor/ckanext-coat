@@ -21,14 +21,7 @@ def new_context():
 
 def get_package(obj):
     if is_resource(obj):
-        context = {
-            'model': model,
-            'session': model.Session,
-            'user': g.user,
-            'for_view': True,
-            'auth_user_obj': g.userobj,
-        }
-
+        context = new_context()
         data_dict = {'id': obj['package_id']}
         return toolkit.get_action('package_show')(context, data_dict)
     else:
