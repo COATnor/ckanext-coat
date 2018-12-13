@@ -69,10 +69,10 @@ class CoatPlugin(plugins.SingletonPlugin):
     # IPackageController / IResourceController
 
     def before_update(self, context, obj, *args, **kwargs):
-        helpers.check_if_protected(obj)
+        helpers.is_protected(obj)
 
     def before_delete(self, context, obj, *args, **kwargs):
-        helpers.check_if_protected(obj)
+        helpers.is_protected(obj)
 
     # IRouters
 
