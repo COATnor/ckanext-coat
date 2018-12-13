@@ -30,11 +30,12 @@ class VersionController(toolkit.BaseController):
                 del package[key]
 
         # update the new package values
+        base_name = extras_dict(package)['base_name']
         package.update({
             'resources': [],
             'metadata_created': datetime.datetime.now(),
             'medatata_modified': datetime.datetime.now(),
-            'name': extras_dict(package)['base_name'],
+            'name': base_name,
             'version': str(int(package.get('version', '0'))+1),
             'private': True,
         })
@@ -56,4 +57,4 @@ class VersionController(toolkit.BaseController):
             })
             toolkit.get_action('resource_create')(context, resource)
 
-        h.redirect_to(controller='package', action='read', id=package_new['id'])  # not working
+        h.redirect_to(controller='package', action='read', id=base_name)
