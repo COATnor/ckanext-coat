@@ -27,8 +27,8 @@ def get_package(obj):
     else:
         return obj
 
-def is_public(obj):
-    return not package.get('private', False)
+def is_public(package):
+    return package.get('private', False)
 
 def is_protected(obj):
     package = get_package(obj)
