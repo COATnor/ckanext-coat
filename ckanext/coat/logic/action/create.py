@@ -19,16 +19,13 @@ def package_create(context, data_dict):
 
     # set version
     if not data_dict.get('version', False):
+        data_dict['version'] = '1'  # default value
         response = toolkit.get_action('package_search')(
             context, {'q': 'base_name:"%s"' % base_name})
         if response['count'] > 0:
             version = response['results'][0].get('version', '1')
             if version.isdigit():
                 data_dict['version'] = str(int(version)+1)
-            else:
-                data_dict['version'] = '1'
-        else:
-            data_dict['version'] = '1'
 
     # append version to the name (it has to be unique)
     data_dict['name'] += '_v' + data_dict['version']
