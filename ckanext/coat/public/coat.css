@@ -1,0 +1,22 @@
+
+.hero {
+  background: url("/images/Varanger.jpg") repeat-x center center;
+}
+
+.account-masthead,
+.navbar,
+.site-footer{
+  background: #0c0c0c;
+}
+
+.homepage .module-search .module-content {
+  background: #01667c;
+}
+
+.module-content {
+  color: black;
+}
+
+body {
+  color: #69B532;
+}
