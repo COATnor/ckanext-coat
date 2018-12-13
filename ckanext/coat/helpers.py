@@ -35,7 +35,6 @@ def get_package(obj):
         return obj
 
 def check_if_protected(obj):
-    import pdb;pdb.set_trace()
     package = get_package(obj)
     if is_old(package):
         raise logic.NotAuthorized
