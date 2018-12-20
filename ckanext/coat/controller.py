@@ -3,11 +3,12 @@ import ckan.logic as logic
 import ckan.lib.base as base
 import ckan.lib.helpers as h
 from ckan.common import _
-from ckanext.coat.helpers import extras_dict, new_context, next_version
+from ckanext.coat.helpers import extras_dict, new_context, next_version, get_resource_path
 from ckanext.datasetversions.helpers import get_context
 
 import copy
 import datetime
+import os
 
 
 class VersionController(toolkit.BaseController):
@@ -47,14 +48,20 @@ class VersionController(toolkit.BaseController):
         for original_resource in resources:
             # clone the resource
             resource = copy.deepcopy(original_resource)
-            for key in ('id', 'revision_id'):
+            for key in ('id', 'revision_id', 'url'):
                 if key in resource:
                     del resource[key]
             # modify the new resource
             resource.update({
                 'package_id': package_new['id'],
-                'url_type': 'url_to_resource',  # link, not upload file field
+                'url': resource['name'],
             })
-            toolkit.get_action('resource_create')(context, resource)
+            resource_new = toolkit.get_action('resource_create')(context, resource)
+            src = get_resource_path(original_resource)
+            dst = get_resource_path(resource_new)
+            dst_dir = os.path.dirname(dst)
+            if not os.path.exists(dst_dir):
+                os.makedirs(dst_dir)
+            os.link(src, dst)
 
         h.redirect_to(controller='package', action='read', id=base_name)

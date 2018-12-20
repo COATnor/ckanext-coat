@@ -66,7 +66,7 @@ class CoatPlugin(plugins.SingletonPlugin):
             ckanext.coat.logic.action.delete.package_delete,
         }
 
-    # IPackageController / IResourceController
+    # IResourceController
 
     def before_update(self, context, obj, *args, **kwargs):
         helpers.is_protected(obj)

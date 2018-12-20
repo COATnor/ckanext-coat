@@ -1,7 +1,8 @@
-import ckan.logic as logic
+import ckan.lib.base as base
 import ckan.model as model
 from ckan.common import g
 import ckan.plugins.toolkit as toolkit
+import ckan.lib.uploader as uploader
 from ckanext.datasetversions.helpers import is_old
 
 def is_resource(obj):
@@ -28,15 +29,21 @@ def get_package(obj):
         return obj
 
 def is_public(package):
-    return package.get('private', False)
+    return not package.get('private', False)
 
 def is_protected(obj):
+    if is_resource(obj):
+        if obj['url_type'] == 'upload':
+            raise base.abort(403, 'Cannot modify an uploaded resource: you have to delete it first')
     package = get_package(obj)
-    if is_old(package) or not is_public(package):
-        raise logic.NotAuthorized('Public and old datasets cannot be modified')
+    if is_public(package):
+        raise base.abort(403, 'Public datasets cannot be modified: make it private if you really need to amend some information')
 
 def next_version(obj):
     version = obj.get('version', '1')
     if version.isdigit():
         version = str(int(version)+1)
     return version
+
+def get_resource_path(res):
+    return uploader.get_resource_uploader(res).get_path(res['id'])
