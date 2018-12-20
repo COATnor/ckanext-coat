@@ -3,7 +3,7 @@ import ckan.logic as logic
 import ckan.lib.base as base
 import ckan.lib.helpers as h
 from ckan.common import _
-from ckanext.coat.helpers import extras_dict, new_context
+from ckanext.coat.helpers import extras_dict, new_context, next_version
 from ckanext.datasetversions.helpers import get_context
 
 import copy
@@ -25,7 +25,7 @@ class VersionController(toolkit.BaseController):
         context = get_context(context)  # needed ?
 
         # remove references to the original package
-        for key in ('id', 'revision_id', 'version'):
+        for key in ('id', 'revision_id'):
             if key in package:
                 del package[key]
 
@@ -37,6 +37,7 @@ class VersionController(toolkit.BaseController):
             'medatata_modified': datetime.datetime.now(),
             'name': base_name,
             'private': True,
+            'version': next_version(package),
         })
 
         # save the package

@@ -34,3 +34,9 @@ def is_protected(obj):
     package = get_package(obj)
     if is_old(package) or not is_public(package):
         raise logic.NotAuthorized('Public and old datasets cannot be modified')
+
+def next_version(obj):
+    version = obj.get('version', '1')
+    if version.isdigit():
+        version = str(int(version)+1)
+    return version
