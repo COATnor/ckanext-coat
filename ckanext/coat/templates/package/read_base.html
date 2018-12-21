@@ -38,6 +38,9 @@
         </div>
       {% endif %}
     {% endblock %}
+    <span>
+      {% link_for 'Download '+pkg.name+'.zip', named_route='dataset.zip', uid=pkg.name, class_="label label-primary" %}
+    </span>
 {% endblock %}
 
 {% block secondary_content %}

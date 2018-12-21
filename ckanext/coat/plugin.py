@@ -79,4 +79,5 @@ class CoatPlugin(plugins.SingletonPlugin):
     def after_map(self, _map):
         with routes.mapper.SubMapper(_map, controller='ckanext.coat.controller:VersionController') as m:
             m.connect('dataset.new_version', '/dataset/{uid}/new_version', action='new_version')
+            m.connect('dataset.zip', '/dataset/{uid}/zip', action='zip')
         return _map
