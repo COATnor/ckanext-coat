@@ -69,10 +69,12 @@ class CoatPlugin(plugins.SingletonPlugin):
     # IResourceController
 
     def before_update(self, context, obj, *args, **kwargs):
-        helpers.is_protected(obj)
+        resource = toolkit.get_action('resource_show')(context, obj)
+        helpers.is_protected(resource, action='update')
 
     def before_delete(self, context, obj, *args, **kwargs):
-        helpers.is_protected(obj)
+        resource = toolkit.get_action('resource_show')(context, obj)
+        helpers.is_protected(resource, action='delete')
 
     # IRouters
 

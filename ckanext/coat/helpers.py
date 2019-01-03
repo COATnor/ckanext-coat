@@ -31,11 +31,13 @@ def get_package(obj):
 def is_public(package):
     return not package.get('private', False)
 
-def is_protected(obj):
+def is_protected(obj, action='update'):
     if is_resource(obj):
-        if obj['url_type'] == 'upload':
+        if obj['url_type'] == 'upload' and action == 'update':
             raise base.abort(403, 'Cannot modify an uploaded resource: you have to delete it first')
-    package = get_package(obj)
+        package = get_package(obj)
+    else:
+        package = obj
     if is_public(package):
         raise base.abort(403, 'Public datasets cannot be modified: make it private if you really need to amend some information')
 
