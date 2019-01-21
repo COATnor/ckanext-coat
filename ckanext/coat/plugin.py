@@ -4,8 +4,10 @@ import ckanext.coat.logic.action.create
 import ckanext.coat.logic.action.get
 import ckanext.coat.logic.action.update
 import ckanext.coat.logic.action.delete
+import ckanext.coat.logic.validators as validators
 import ckanext.coat.auth as auth
 from ckanext.coat import helpers
+import ckan.lib.base as base
 import routes.mapper
 
 import requests
@@ -89,6 +91,12 @@ class CoatPlugin(plugins.SingletonPlugin):
     def before_delete(self, context, obj, *args, **kwargs):
         resource = toolkit.get_action('resource_show')(context, obj)
         helpers.is_protected(resource, action='delete')
+
+    def before_create(self, context, obj):
+        try:
+            validators.resource_name_conflict(obj['name'], context)
+        except toolkit.Invalid, e:
+            raise base.abort(409, str(e))
 
     # IRouters
 
