@@ -1,6 +1,7 @@
 import ckan.lib.base as base
 import ckan.model as model
 from ckan.common import g
+import ckan.logic as logic
 import ckan.plugins.toolkit as toolkit
 import ckan.lib.uploader as uploader
 from ckanext.datasetversions.helpers import is_old
@@ -49,3 +50,11 @@ def next_version(obj):
 
 def get_resource_path(res):
     return uploader.get_resource_uploader(res).get_path(res['id'])
+
+def is_under_embargo(package):
+    context = new_context()
+    try:
+        toolkit.check_access('embargo_access', context, package)
+    except logic.NotAuthorized:
+        return True
+    return False

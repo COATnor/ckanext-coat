@@ -18,6 +18,7 @@ class CoatPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IActions)
     plugins.implements(plugins.IResourceController, inherit=True)
     plugins.implements(plugins.IRoutes, inherit=True)
+    plugins.implements(plugins.ITemplateHelpers)
 
     # IAuthFunctions
 
@@ -96,3 +97,10 @@ class CoatPlugin(plugins.SingletonPlugin):
             m.connect('dataset.new_version', '/dataset/{uid}/new_version', action='new_version')
             m.connect('dataset.zip', '/dataset/{uid}/zip', action='zip')
         return _map
+
+    # ITemplateHelpers
+
+    def get_helpers(self):
+        return {
+            'coat_is_under_embargo': helpers.is_under_embargo,
+        }
