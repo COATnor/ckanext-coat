@@ -94,6 +94,7 @@ class VersionController(toolkit.BaseController):
         # check if package exists
         try:
             package = toolkit.get_action('package_show')(context, data_dict)
+            toolkit.get_action('resource_show')(context, package['resources'][0])
         except (logic.NotFound, logic.NotAuthorized):
             base.abort(404, _('Dataset not found'))
 

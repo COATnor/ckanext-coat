@@ -1,7 +1,7 @@
 import ckan.plugins.toolkit as toolkit
+import ckan.logic as logic
 from ckan.logic.action.get import package_search as ckan_package_search
-from ckanext.coat import helpers
-
+from ckan.logic.action.get import resource_show as ckan_resource_show
 
 @toolkit.side_effect_free
 def package_search(context, data_dict):
@@ -9,3 +9,18 @@ def package_search(context, data_dict):
         '{!collapse field=base_name max=field(version_i)}',
     ]
     return ckan_package_search(context, data_dict)
+
+@toolkit.chained_action
+def package_show(original_action, context, data_dict):
+    package = original_action(context, data_dict)
+    try:
+        toolkit.check_access('embargo_access', context, data_dict)
+    except logic.NotAuthorized:
+        for resource in package['resources']:
+            resource['url'] = "#resource-under-embargo"
+    return package
+
+@toolkit.side_effect_free
+def resource_show(context, data_dict):
+    toolkit.check_access('embargo_access', context, data_dict)
+    return ckan_resource_show(context, data_dict)
