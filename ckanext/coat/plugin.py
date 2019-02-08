@@ -15,17 +15,11 @@ import requests
 CKAN_SCHEMA = 'http://solr:8983/solr/ckan/schema'
 
 class CoatPlugin(plugins.SingletonPlugin):
-    plugins.implements(plugins.IAuthFunctions)
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IActions)
     plugins.implements(plugins.IResourceController, inherit=True)
     plugins.implements(plugins.IRoutes, inherit=True)
     plugins.implements(plugins.ITemplateHelpers)
-
-    # IAuthFunctions
-
-    def get_auth_functions(self):
-        return {'embargo_access': auth.embargo_access}
 
     # IConfigurer
 

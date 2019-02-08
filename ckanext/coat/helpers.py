@@ -5,12 +5,13 @@ import ckan.logic as logic
 import ckan.plugins.toolkit as toolkit
 import ckan.lib.uploader as uploader
 from ckanext.datasetversions.helpers import is_old
+from ckanext.coat import auth
 
 def is_resource(obj):
     return 'package_id' in obj
 
 def extras_dict(package):
-    return {f['key']:f['value'] for f in package['extras']}
+    return {f['key']:f['value'] for f in package.get('extras', {})}
 
 def new_context():
     return {
@@ -22,12 +23,12 @@ def new_context():
     }
 
 def get_package(obj):
+    context = new_context()
     if is_resource(obj):
-        context = new_context()
         data_dict = {'id': obj['package_id']}
-        return toolkit.get_action('package_show')(context, data_dict)
     else:
-        return obj
+        data_dict = {'id': obj['id']}
+    return toolkit.get_action('ckan_package_show')(context, data_dict)
 
 def is_public(package):
     return not package.get('private', False)
@@ -54,7 +55,7 @@ def get_resource_path(res):
 def is_under_embargo(package):
     context = new_context()
     try:
-        toolkit.check_access('embargo_access', context, package)
+        auth.embargo_access(context, package)
     except logic.NotAuthorized:
         return True
     return False
