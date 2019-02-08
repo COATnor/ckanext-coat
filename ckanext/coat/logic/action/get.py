@@ -1,5 +1,6 @@
 import ckan.plugins.toolkit as toolkit
 import ckan.logic as logic
+import ckan.model as model
 from ckan.logic.action.get import package_search as ckan_package_search
 from ckan.logic.action.get import resource_show as ckan_resource_show
 from ckanext.coat import auth
@@ -14,6 +15,7 @@ def package_search(context, data_dict):
 @toolkit.chained_action
 def package_show(original_action, context, data_dict):
     package = original_action(context, data_dict)
+    context['package'] = model.Package.get(package['name'])
     try:
         auth.embargo_access(context, data_dict)
     except logic.NotAuthorized:
