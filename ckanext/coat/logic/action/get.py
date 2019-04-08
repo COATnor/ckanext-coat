@@ -25,5 +25,6 @@ def package_show(original_action, context, data_dict):
 
 @toolkit.side_effect_free
 def resource_show(context, data_dict):
-    auth.embargo_access(context, data_dict)
-    return ckan_resource_show(context, data_dict)
+    resource = ckan_resource_show(context, data_dict)
+    auth.embargo_access(context, resource)
+    return resource
