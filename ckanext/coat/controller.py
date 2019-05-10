@@ -62,6 +62,9 @@ class VersionController(toolkit.BaseController):
                 'url': resource['name'],
             })
             resource_new = toolkit.get_action('resource_create')(context, resource)
+            # avoid hardlinking when cloning link resources
+            if resource['url_type'] != "upload":
+                continue
             src = get_resource_path(original_resource)
             dst = get_resource_path(resource_new)
             dst_dir = os.path.dirname(dst)
