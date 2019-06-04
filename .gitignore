@@ -50,3 +50,6 @@ docs/_build/
 auto-save-list
 tramp
 .\#*
+
+# Pycharm
+.idea/*
