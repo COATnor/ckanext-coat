@@ -87,9 +87,8 @@ class CoatPlugin(plugins.SingletonPlugin):
         helpers.is_protected(resource, action='delete')
 
     def before_create(self, context, obj):
-        return # skip check; TODO: should be dataset-aware
         try:
-            validators.resource_name_conflict(obj['name'], context)
+            validators.resource_name_conflict(obj, context)
         except toolkit.Invalid, e:
             raise base.abort(409, str(e))
 
