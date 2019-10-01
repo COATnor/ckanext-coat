@@ -1,3 +1,4 @@
+from ckan.common import config
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 import ckanext.coat.logic.action.create
@@ -88,7 +89,8 @@ class CoatPlugin(plugins.SingletonPlugin):
 
     def before_create(self, context, obj):
         try:
-            validators.resource_name_conflict(obj, context)
+            globally_unique = config.get('ckanext.coat.resource_name_globally_unique', False)
+            validators.resource_name_conflict(context, obj, globally_unique)
         except toolkit.Invalid, e:
             raise base.abort(409, str(e))
 
