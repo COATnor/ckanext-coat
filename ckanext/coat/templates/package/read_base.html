@@ -16,7 +16,7 @@
     {% link_for _('New version'), named_route='dataset.new_version', uid=pkg.name, class_='btn btn-primary', icon='plus-square' %}
   {% endif %}
   {# ckanext.coat customization - end #}
-    {% link_for _('Manage'), named_route='dataset.edit', id=pkg.name, class_='btn btn-default', icon='wrench' %}
+    {% link_for _('Manage'), controller='package', action='edit', id=pkg.name, class_='btn btn-default', icon='wrench' %}
   {% endif %}
 {% endblock %}
 

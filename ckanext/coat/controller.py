@@ -72,7 +72,7 @@ class VersionController(toolkit.BaseController):
                 os.makedirs(dst_dir)
             os.link(src, dst)
 
-        h.redirect_to(controller='dataset', action='read', id=base_name)
+        h.redirect_to(controller='package', action='read', id=base_name)
 
     def _send_file(self, path, name):
         # Similar to resource_download from ckan/controllers/package.py
