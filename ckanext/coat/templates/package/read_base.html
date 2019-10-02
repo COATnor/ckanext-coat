@@ -40,11 +40,13 @@
       {% endif %}
     {% endblock %}
     <span>
+    {# ckanext.coat customization - start #}
     {% if h.coat_is_under_embargo(pkg) %}
       <span class="label label-warning">Dataset under embargo</span>
     {% else %}
       {% link_for 'Download '+pkg.name+'.zip', named_route='dataset.zip', uid=pkg.name, class_="label label-primary" %}
     {% endif %}
+    {# ckanext.coat customization - end #}
     </span>
 {% endblock %}
 
