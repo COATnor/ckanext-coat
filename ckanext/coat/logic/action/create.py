@@ -6,7 +6,7 @@ from ckanext.coat.helpers import extras_dict, next_version
 def package_create(context, data_dict):
     # parent dataset
     # https://github.com/aptivate/ckanext-datasetversions/issues/10
-    if len(data_dict) <= 3:
+    if data_dict.get('__parent', False):
         return ckan_package_create(context, data_dict)
 
     # set base_name extra field
