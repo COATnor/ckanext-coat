@@ -14,14 +14,14 @@ def resource_name_conflict_global(context, pkg_dict, name):
         .filter(
             model.PackageExtra.key == 'base_name',
             model.PackageExtra.value != extras['base_name'],
-            model.Resource.name == name,
+            model.Resource.name.ilike(name),
         ).first()
     if result:
         raise Invalid('Resource with the same name already exists: ' + name)
 
 def resource_name_conflict_local(context, pkg_dict, name):
     for resource in pkg_dict['resources']:
-        if resource['name'] == name:
+        if resource['name'].lower() == name.lower():
             raise Invalid('Resource with the same name in the same ' \
                           'dataset already exists: ' + name)
 
