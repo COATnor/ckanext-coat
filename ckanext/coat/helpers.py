@@ -8,6 +8,7 @@ from ckanext.datasetversions.helpers import is_old
 from ckanext.coat import auth
 
 import os.path
+import datetime
 
 def is_resource(obj):
     return 'package_id' in obj
@@ -66,3 +67,11 @@ def lowercase_extension(obj):
     filename, extension = os.path.splitext(obj['name'])
     obj['name'] = filename+extension.lower()
     return obj
+
+def set_embargo_date(data_dict):
+    embargo_entry = data_dict.get('embargo')
+    if embargo_entry == '2-years':
+        now = datetime.datetime.now()
+        end = now.year + 2
+        embargo_date = now.replace(year=end)
+        data_dict['embargo_date'] = embargo_date

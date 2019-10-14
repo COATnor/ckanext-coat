@@ -1,6 +1,6 @@
 import ckan.plugins.toolkit as toolkit
 from ckan.logic.action.create import package_create as ckan_package_create
-from ckanext.coat.helpers import extras_dict, next_version
+from ckanext.coat.helpers import extras_dict, next_version, set_embargo_date
 
 @toolkit.side_effect_free
 def package_create(context, data_dict):
@@ -20,6 +20,9 @@ def package_create(context, data_dict):
     # set version
     if not data_dict.get('version', ''):
         data_dict['version'] = '1'
+
+    # set embargo date
+    set_embargo_date(data_dict)
 
     # append version to the name (it has to be unique)
     data_dict['name'] += '_v' + data_dict['version']

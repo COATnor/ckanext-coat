@@ -9,9 +9,16 @@ def embargo_access(context, data_dict=None):
         toolkit.check_access('package_update', context, package)
     except logic.NotAuthorized:
         embargo = h.extras_dict(package).get('embargo', None)
-        if embargo:
+        if embargo == "2-years":
+            embargo_date = h.extras_dict(package).get('embargo_date', None)
             try:
-                if datetime.now() < datetime.strptime(embargo, '%Y-%m-%d'):
-                    raise toolkit.NotAuthorized, 'The dataset is under embargo until %s.' % embargo
+                #if datetime.now() < datetime.strptime(embargo_date, '%Y-%m-%d'):
+                if datetime.now() < embargo_date:
+                    raise toolkit.NotAuthorized, 'The dataset is under embargo until %s.' % embargo_date
             except ValueError:
-                pass # warning
+                pass  # warning
+        elif embargo == 'hidden':
+            raise toolkit.NotAuthorized, 'The dataset is private'
+
+
+
