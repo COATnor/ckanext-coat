@@ -88,6 +88,7 @@ class CoatPlugin(plugins.SingletonPlugin):
         helpers.is_protected(resource, action='delete')
 
     def before_create(self, context, obj):
+        obj = helpers.lowercase_extension(obj)
         try:
             globally_unique = config.get('ckanext.coat.resource_name_globally_unique', False)
             validators.resource_name_conflict(context, obj, globally_unique)

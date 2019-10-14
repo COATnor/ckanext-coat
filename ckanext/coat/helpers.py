@@ -7,6 +7,8 @@ import ckan.lib.uploader as uploader
 from ckanext.datasetversions.helpers import is_old
 from ckanext.coat import auth
 
+import os.path
+
 def is_resource(obj):
     return 'package_id' in obj
 
@@ -59,3 +61,8 @@ def is_under_embargo(package):
     except logic.NotAuthorized:
         return True
     return False
+
+def lowercase_extension(obj):
+    filename, extension = os.path.splitext(obj['name'])
+    obj['name'] = filename+extension.lower()
+    return obj
