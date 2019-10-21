@@ -8,7 +8,7 @@ from ckanext.datasetversions.helpers import is_old
 from ckanext.coat import auth
 
 import os.path
-import datetime
+
 
 def is_resource(obj):
     return 'package_id' in obj
