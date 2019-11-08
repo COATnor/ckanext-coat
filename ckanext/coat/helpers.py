@@ -37,8 +37,8 @@ def is_public(package):
 
 def is_protected(obj, action='update'):
     if is_resource(obj):
-        if obj['url_type'] == 'upload' and action == 'update':
-            raise base.abort(403, 'Cannot modify an uploaded resource: you have to delete it first')
+        if action == 'update':
+            raise base.abort(403, 'Cannot modify a resource: you have to delete it first')
         package = get_package(obj)
     else:
         package = obj
@@ -62,7 +62,3 @@ def is_under_embargo(package):
         return True
     return False
 
-def lowercase_extension(obj):
-    filename, extension = os.path.splitext(obj['name'])
-    obj['name'] = filename+extension.lower()
-    return obj

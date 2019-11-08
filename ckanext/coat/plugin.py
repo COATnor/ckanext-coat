@@ -15,12 +15,14 @@ import requests
 
 CKAN_SCHEMA = 'http://solr:8983/solr/ckan/schema'
 
-class CoatPlugin(plugins.SingletonPlugin):
+class CoatPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IActions)
     plugins.implements(plugins.IResourceController, inherit=True)
     plugins.implements(plugins.IRoutes, inherit=True)
     plugins.implements(plugins.ITemplateHelpers)
+    plugins.implements(plugins.IDatasetForm)
+    plugins.implements(plugins.IValidators)
 
     # IConfigurer
 
@@ -87,14 +89,6 @@ class CoatPlugin(plugins.SingletonPlugin):
         resource = toolkit.get_action('resource_show')(context, obj)
         helpers.is_protected(resource, action='delete')
 
-    def before_create(self, context, obj):
-        obj = helpers.lowercase_extension(obj)
-        try:
-            globally_unique = config.get('ckanext.coat.resource_name_globally_unique', False)
-            validators.resource_name_conflict(context, obj, globally_unique)
-        except toolkit.Invalid, e:
-            raise base.abort(409, str(e))
-
     # IRouters
 
     def after_map(self, _map):
@@ -108,4 +102,43 @@ class CoatPlugin(plugins.SingletonPlugin):
     def get_helpers(self):
         return {
             'coat_is_under_embargo': helpers.is_under_embargo,
+        }
+
+    # IDatasetForm
+
+    def _custom_package_schema(self, schema):
+        validators = schema['resources']['name']
+        for validator in ('lowercase_extension', 'resource_name_conflict'):
+            validators.append(toolkit.get_validator(validator))
+        schema['resources']['name'] = validators
+        return schema
+
+    def create_package_schema(self):
+        schema = super(CoatPlugin, self).create_package_schema()
+        return self._custom_package_schema(schema)
+
+    def update_package_schema(self):
+        schema = super(CoatPlugin, self).update_package_schema()
+        return self._custom_package_schema(schema)
+
+    def show_package_schema(self):
+        schema = super(CoatPlugin, self).show_package_schema()
+        return schema
+
+    def is_fallback(self):
+        return False
+
+    def package_types(self):
+        if config.get('ckanext.coat.custom_form', "true").lower() == "false":
+            return []
+        else:
+            return ['dataset']
+
+
+    # IValidators
+
+    def get_validators(self):
+        return {
+            'lowercase_extension': validators.lowercase_extension,
+            'resource_name_conflict': validators.resource_name_conflict,
         }
