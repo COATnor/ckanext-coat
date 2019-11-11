@@ -115,6 +115,7 @@ class CoatPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
     def create_package_schema(self):
         schema = super(CoatPlugin, self).create_package_schema()
+        schema['private'].append(toolkit.get_validator('private_on_creation'))
         return self._custom_package_schema(schema)
 
     def update_package_schema(self):
@@ -141,4 +142,5 @@ class CoatPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         return {
             'lowercase_extension': validators.lowercase_extension,
             'resource_name_conflict': validators.resource_name_conflict,
+            'private_on_creation': validators.private_on_creation,
         }

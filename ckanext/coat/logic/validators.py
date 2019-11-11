@@ -46,3 +46,8 @@ def resource_name_conflict(key, data, errors, context):
         url = data.get((key[0], key[1], 'url'))
         _resource_name_conflict_global(context, pkg_dict, name, url)
     return name
+
+def private_on_creation(value):
+    if value:
+        return value
+    raise Invalid('New datasets cannot be public (please set "Visibility" to "Private")')
