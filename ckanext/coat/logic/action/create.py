@@ -10,7 +10,7 @@ def package_create(context, data_dict):
         return ckan_package_create(context, data_dict)
 
     # set base_name extra field
-    base_name = data_dict['name']
+    base_name = data_dict['title']
     data_dict.setdefault('extras', [])
     if 'base_name' not in extras_dict(data_dict):
         data_dict['extras'].append(
@@ -22,7 +22,7 @@ def package_create(context, data_dict):
         data_dict['version'] = '1'
 
     # append version to the name (it has to be unique)
-    data_dict['name'] += '_v' + data_dict['version']
+    data_dict['name'] = base_name + '_v' + data_dict['version']
 
     # create package and version
     package = ckan_package_create(context, data_dict)
