@@ -7,9 +7,10 @@ from ckanext.coat import auth
 
 @toolkit.side_effect_free
 def package_search(context, data_dict):
-    data_dict['fq_list'] = [
-        '{!collapse field=base_name max=field(version_i)}',
-    ]
+    data_dict.setdefault('fq_list', [])
+    data_dict['fq_list'].append(
+        '{!collapse field=base_name max=field(version_i)}'
+    )
     return ckan_package_search(context, data_dict)
 
 @toolkit.chained_action
