@@ -40,6 +40,8 @@ def resource_name_conflict(key, data, errors, context):
         # not a new resource
         # existing resources cannot be renamed due to helpers.is_protected
         return name
+    if not name.strip():
+        raise Invalid('Name cannot be empty')
     _resource_name_conflict_local(context, pkg_dict, name)
     globally_unique = config.get('ckanext.coat.resource_name_globally_unique', 'false').lower() == 'true'
     if globally_unique:
