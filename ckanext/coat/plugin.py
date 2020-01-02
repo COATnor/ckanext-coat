@@ -81,15 +81,24 @@ class CoatPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
     # IResourceController
 
-    def before_update(self, context, obj, *args, **kwargs):
+    def before_update(self, context, obj, data_dict, *args, **kwargs):
         resource = toolkit.get_action('resource_show')(context, obj)
-        helpers.is_protected(resource, action='update')
+        if data_dict.get('__force', False):
+            del data_dict['__force']
+        else:
+            helpers.is_protected(resource, action='update')
 
     def before_delete(self, context, obj, *args, **kwargs):
         resource = toolkit.get_action('resource_show')(context, obj)
         helpers.is_protected(resource, action='delete')
 
     # IRouters
+
+    def before_map(self, _map):
+        with routes.mapper.SubMapper(_map, controller='ckanext.coat.controller:CustomPackageController') as m:
+            m.connect('package.resource_download', '/dataset/{uid}/resource/{resource_uid}/download', action='custom_resource_download')
+            m.connect('package.resource_download', '/dataset/{uid}/resource/{resource_uid}/download/{filename}', action='custom_resource_download')
+        return _map
 
     def after_map(self, _map):
         with routes.mapper.SubMapper(_map, controller='ckanext.coat.controller:VersionController') as m:
