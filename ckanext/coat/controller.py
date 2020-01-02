@@ -1,10 +1,12 @@
 import ckan.plugins.toolkit as toolkit
 import ckan.logic as logic
+import ckan.model as model
 import ckan.lib.base as base
 import ckan.lib.helpers as h
-from ckan.common import _, request, response
+from ckan.common import _, request, response, c
 from ckanext.coat.helpers import extras_dict, new_context, next_version, get_resource_path
 from ckanext.datasetversions.helpers import get_context
+from ckan.controllers.package import PackageController
 
 import paste.fileapp
 
@@ -110,3 +112,16 @@ class VersionController(toolkit.BaseController):
                 archive.write(path, resource['name'])
 
         return self._send_file(zip_path, '%s.zip' % uid)
+
+
+class CustomPackageController(PackageController):
+    def custom_resource_download(self, uid, resource_uid, filename=None):
+        response = self.resource_download(uid, resource_uid, filename)
+        # code executed if there is no redirect nor errors (uploaded file only)
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user, 'auth_user_obj': c.userobj}
+        resource = toolkit.get_action('resource_show')(context, {'id': resource_uid})
+        resource['downloads'] = str(int(resource.get('downloads', '0'))+1)
+        resource['__force'] = True
+        toolkit.get_action('resource_update')(context, resource)
+        return response
