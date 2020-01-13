@@ -117,11 +117,17 @@ class VersionController(toolkit.BaseController):
 class CustomPackageController(PackageController):
     def custom_resource_download(self, uid, resource_uid, filename=None):
         response = self.resource_download(uid, resource_uid, filename)
-        # code executed if there is no redirect nor errors (uploaded file only)
+        ### the code below executed if there is no errors such as missing file
+        ###   or redirect - uploaded file only are available for download
         context = {'model': model, 'session': model.Session,
                    'user': c.user, 'auth_user_obj': c.userobj}
         resource = toolkit.get_action('resource_show')(context, {'id': resource_uid})
+        ### the code below executed if there is no permission error
         resource['downloads'] = str(int(resource.get('downloads', '0'))+1)
+        # disable before_update checks like is_protected
         resource['__force'] = True
+        # allow to update the resource even if the user cannot modify it
+        #   so downloads can be incremented
+        context['ignore_auth'] = True
         toolkit.get_action('resource_update')(context, resource)
         return response

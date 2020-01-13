@@ -83,10 +83,9 @@ class CoatPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
     def before_update(self, context, obj, data_dict, *args, **kwargs):
         resource = toolkit.get_action('resource_show')(context, obj)
-        if data_dict.get('__force', False):
-            del data_dict['__force']
-        else:
-            helpers.is_protected(resource, action='update')
+        if context.get('ignore_auth', False):
+            return
+        helpers.is_protected(resource, action='update')
 
     def before_delete(self, context, obj, *args, **kwargs):
         resource = toolkit.get_action('resource_show')(context, obj)
