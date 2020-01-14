@@ -18,6 +18,19 @@ import os
 import zipfile
 
 
+def increment_download_counter(context, resource_uid):
+    resource = toolkit.get_action('resource_show')(context, {'id': resource_uid})
+    ### the code below executed if there is no permission error
+    resource['downloads'] = str(int(resource.get('downloads', '0'))+1)
+    # disable before_update checks like is_protected
+    resource['__force'] = True
+    # allow to update the resource even if the user cannot modify it
+    #   so downloads can be incremented
+    context['ignore_auth'] = True
+    toolkit.get_action('resource_update')(context, resource)
+    return resource['downloads']
+
+
 class VersionController(toolkit.BaseController):
     def new_version(self, uid):
         context = new_context()
@@ -111,6 +124,14 @@ class VersionController(toolkit.BaseController):
                 path = get_resource_path(resource)
                 archive.write(path, resource['name'])
 
+        # Similar to custom_resource_download
+        package['downloads'] = str(int(package.get('downloads', '0'))+1)
+        context['ignore_auth'] = True
+        toolkit.get_action('package_update')(context, package)
+
+        for resource in package['resources']:
+            increment_download_counter(context, resource['id'])
+
         return self._send_file(zip_path, '%s.zip' % uid)
 
 
@@ -121,13 +142,5 @@ class CustomPackageController(PackageController):
         ###   or redirect - uploaded file only are available for download
         context = {'model': model, 'session': model.Session,
                    'user': c.user, 'auth_user_obj': c.userobj}
-        resource = toolkit.get_action('resource_show')(context, {'id': resource_uid})
-        ### the code below executed if there is no permission error
-        resource['downloads'] = str(int(resource.get('downloads', '0'))+1)
-        # disable before_update checks like is_protected
-        resource['__force'] = True
-        # allow to update the resource even if the user cannot modify it
-        #   so downloads can be incremented
-        context['ignore_auth'] = True
-        toolkit.get_action('resource_update')(context, resource)
+        increment_download_counter(context, resource_uid)
         return response
