@@ -1,8 +1,0 @@
-image: alpine:latest
-
-trigger_build:
-  stage: deploy
-  script:
-    - apk update
-    - apk add curl
-    - "curl -X POST -F token=$CI_JOB_TOKEN -F ref=$CI_COMMIT_REF_NAME https://gitlab.com/api/v4/projects/8528355/trigger/pipeline"
