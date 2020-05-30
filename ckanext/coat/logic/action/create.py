@@ -1,6 +1,9 @@
 import ckan.plugins.toolkit as toolkit
 from ckan.logic.action.create import package_create as ckan_package_create
 from ckanext.coat.helpers import extras_dict, next_version
+import string
+
+allowed_characters = string.ascii_lowercase + string.digits + '-_'
 
 @toolkit.side_effect_free
 def package_create(context, data_dict):
@@ -9,8 +12,16 @@ def package_create(context, data_dict):
     if data_dict.get('__parent', False):
         return ckan_package_create(context, data_dict)
 
-    # set base_name extra field
-    base_name = data_dict['title']
+    # set base_name extra field, by mimicking slug-field
+    base_name = ""
+    for character in data_dict['title'].lower():
+        if character in allowed_characters:
+            base_name += character
+        else:
+            base_name += '-'
+        base_name = base_name.replace('--', '-')
+    base_name = base_name.strip('-')
+
     data_dict.setdefault('extras', [])
     if 'base_name' not in extras_dict(data_dict):
         data_dict['extras'].append(
