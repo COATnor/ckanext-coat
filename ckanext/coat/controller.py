@@ -50,6 +50,11 @@ class VersionController(toolkit.BaseController):
             if key in package:
                 del package[key]
 
+        # remove also doi entry:
+        for key in ('doi', 'doi_date_published', 'doi_publisher', 'doi_status'):
+            if key in package:
+                del package[key]
+
         # update the new package values
         base_name = extras_dict(package)['base_name']
         package.update({
