@@ -20,4 +20,10 @@ def package_update(context, data_dict):
                 {'key': 'base_name', 'value': base_name},
              )
 
+    # This is required in ckanext-coatcustom, version was missing
+    # in data_dict -> required for Datacite DOI metadata
+    # see ckanext-coatcustom.plugin.py
+    if 'version' in package.keys():
+        data_dict['version'] = package['version']
+
     return ckan_package_update(context, data_dict)
