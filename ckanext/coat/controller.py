@@ -73,14 +73,14 @@ class VersionController(toolkit.BaseController):
         for original_resource in resources:
             # clone the resource
             resource = copy.deepcopy(original_resource)
-            for key in ('id', 'revision_id', 'url'):
+            #import pdb;pdb.set_trace()
+            for key in ('id', 'revision_id'):
                 if key in resource:
                     del resource[key]
             # modify the new resource
-            resource.update({
-                'package_id': package_new['id'],
-                'url': resource['name'],
-            })
+            resource['package_id'] = package_new['id']
+            if resource['url_type'] != 'upload':
+                resource['url'] = resource['name']
             resource_new = toolkit.get_action('resource_create')(context, resource)
             # avoid hardlinking when cloning link resources
             if resource['url_type'] != "upload":
