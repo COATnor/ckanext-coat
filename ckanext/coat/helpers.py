@@ -29,7 +29,10 @@ def get_package(obj):
     if is_resource(obj):
         data_dict = {'id': obj['package_id']}
     else:
-        data_dict = {'id': obj['id']}
+        for attr in ('id', 'name_or_id'):
+            if attr in obj:
+                data_dict = {attr: obj[attr]}
+                break
     return toolkit.get_action('ckan_package_show')(context, data_dict)
 
 def is_public(package):
