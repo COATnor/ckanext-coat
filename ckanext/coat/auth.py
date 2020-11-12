@@ -8,7 +8,7 @@ def embargo_access(context, data_dict=None):
     try:
         toolkit.check_access('package_update', context, package)
     except logic.NotAuthorized:
-        embargo = h.extras_dict(package).get('embargo', None)
+        embargo = package.get('embargo', None)
         if embargo:
             try:
                 if datetime.now() < datetime.strptime(embargo, '%Y-%m-%d'):
