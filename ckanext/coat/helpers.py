@@ -41,6 +41,7 @@ def is_public(package):
 def is_protected(obj, action='update'):
     if is_resource(obj):
         if action == 'update':
+            return # WORKAROUND FOR BULK UPLOAD
             raise base.abort(403, 'Cannot modify a resource: you have to delete it first')
         package = get_package(obj)
     else:
