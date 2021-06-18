@@ -8,8 +8,7 @@ def package_update(context, data_dict):
     package = toolkit.get_action('package_show')(context, data_dict)
     # check if protected only if not switching between private and public
     if data_dict.get('private', False) == package.get('private', False):
-        if not context.get('ignore_auth', False):
-           is_protected(package)
+        is_protected(package)
 
     # ckanext-scheming workaround
     base_name = extras_dict(package).get('base_name')
