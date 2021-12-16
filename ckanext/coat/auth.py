@@ -3,8 +3,8 @@ import ckan.logic as logic
 import helpers as h
 from datetime import datetime
 
-def embargo_access(context, data_dict=None):
-    package = h.get_package(data_dict)
+def embargo_access(context, data_dict):
+    package = h.get_package(data_dict, context)
     try:
         toolkit.check_access('package_update', context, package)
     except logic.NotAuthorized:
