@@ -16,13 +16,15 @@ def extras_dict(package):
     return {f['key']:f['value'] for f in package.get('extras', {})}
 
 def new_context():
-    return {
+    context = {
         'model': model,
         'session': model.Session,
-        'user': g.user,
         'for_view': True,
-        'auth_user_obj': g.userobj,
     }
+    for attr in ('user', 'userobj'):
+        if hasattr(g, attr):
+            context[attr] = getattr(g, attr)
+    return context
 
 def get_package(obj):
     context = new_context()
