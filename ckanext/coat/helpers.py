@@ -24,8 +24,9 @@ def new_context():
         'auth_user_obj': g.userobj,
     }
 
-def get_package(obj):
-    context = new_context()
+def get_package(obj, context):
+    if not context:
+        context = new_context()
     if is_resource(obj):
         data_dict = {'id': obj['package_id']}
     else:
