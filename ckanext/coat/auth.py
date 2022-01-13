@@ -1,6 +1,6 @@
 import ckan.plugins.toolkit as toolkit
 import ckan.logic as logic
-import helpers as h
+import ckanext.coat.helpers as h
 from datetime import datetime
 
 def embargo_access(context, data_dict):
@@ -12,6 +12,6 @@ def embargo_access(context, data_dict):
         if embargo:
             try:
                 if datetime.now() < datetime.strptime(embargo, '%Y-%m-%d'):
-                    raise toolkit.NotAuthorized, 'The dataset is under embargo until %s.' % embargo
+                    raise toolkit.NotAuthorized('The dataset is under embargo until %s.' % embargo)
             except ValueError:
                 pass # warning
