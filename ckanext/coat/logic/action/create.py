@@ -42,6 +42,7 @@ def package_create(context, data_dict):
             'id': package['id'],
             'base_name': base_name,
             'owner_org': data_dict['owner_org'],
+            'type': data_dict['type'],
         }
     )
 
