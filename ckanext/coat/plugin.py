@@ -7,6 +7,7 @@ import ckanext.coat.logic.action.update
 import ckanext.coat.logic.action.delete
 import ckanext.coat.logic.validators as validators
 import ckanext.coat.auth as auth
+from ckanext.coat import blueprint
 from ckanext.coat import helpers
 import ckan.lib.base as base
 import routes.mapper
@@ -19,7 +20,7 @@ class CoatPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IActions)
     plugins.implements(plugins.IResourceController, inherit=True)
-    plugins.implements(plugins.IRoutes, inherit=True)
+    plugins.implements(plugins.IBlueprint, inherit=True)
     plugins.implements(plugins.ITemplateHelpers)
     plugins.implements(plugins.IDatasetForm)
     plugins.implements(plugins.IValidators)
@@ -89,13 +90,10 @@ class CoatPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         resource = toolkit.get_action('resource_show')(context, obj)
         helpers.is_protected(resource, action='delete')
 
-    # IRouters
+    # IBlueprint
 
-    def after_map(self, _map):
-        with routes.mapper.SubMapper(_map, controller='ckanext.coat.controller:VersionController') as m:
-            m.connect('dataset.new_version', '/dataset/{uid}/new_version', action='new_version')
-            m.connect('dataset.zip', '/dataset/{uid}/zip', action='zip')
-        return _map
+    def get_blueprint(self):
+        return blueprint.coat
 
     # ITemplateHelpers
 

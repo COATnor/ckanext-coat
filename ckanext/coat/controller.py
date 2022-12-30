@@ -11,9 +11,7 @@ import paste.fileapp
 import copy
 import datetime
 import mimetypes
-import tempfile
 import os
-import zipfile
 
 
 class VersionController(toolkit.BaseController):
@@ -94,24 +92,3 @@ class VersionController(toolkit.BaseController):
         response.headers['Content-Disposition'] = 'attachment; filename="%s"' % name
         # FILESIZE MISSING
         return app_iter
-
-    def zip(self, uid):
-        context = new_context()
-        data_dict = {'id': uid}
-
-        # check if package exists
-        try:
-            package = toolkit.get_action('package_show')(context, data_dict)
-            toolkit.get_action('resource_show')(context, package['resources'][0])
-        except (logic.NotFound, logic.NotAuthorized):
-            base.abort(404, _('Dataset not found'))
-
-        zip_path = os.path.join(tempfile.gettempdir(), package['id']+'.zip')
-        with zipfile.ZipFile(zip_path, 'w') as archive:
-            for resource in package['resources']:
-                if resource['url_type'] != 'upload':
-                    continue
-                path = get_resource_path(resource)
-                archive.write(path, resource['name'])
-
-        return self._send_file(zip_path, '%s.zip' % uid)
