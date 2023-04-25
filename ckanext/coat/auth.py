@@ -5,9 +5,7 @@ from datetime import datetime
 
 def embargo_access(context, data_dict):
     package = h.get_package(data_dict, context)
-    try:
-        toolkit.check_access('package_update', context, package)
-    except logic.NotAuthorized:
+    if not context.get('auth_user_obj'):
         embargo = package.get('embargo', None)
         if embargo:
             try:
