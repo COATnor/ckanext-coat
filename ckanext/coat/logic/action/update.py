@@ -5,9 +5,20 @@ from ckanext.coat.helpers import extras_dict, is_protected
 
 @toolkit.side_effect_free
 def package_update(context, data_dict):
-    package = toolkit.get_action('package_show')(context, data_dict)
-    # check if protected only if not switching between private and public
-    if data_dict.get('private', False) == package.get('private', False):
+    package = toolkit.get_action("package_show")(context, data_dict)
+
+    # Draft datasets must always be private
+    package_state = data_dict.get("state") or package.get("state")
+    is_draft = package_state == "draft"
+    if is_draft:
+        data_dict["private"] = True
+
+    # Protect public active packages from changes, except when switching to private
+    # Convert to bool to handle string "True"/"False" from forms
+    new_private = toolkit.asbool(data_dict.get("private", False))
+    old_private = toolkit.asbool(package.get("private", False))
+    is_staying_public = not new_private and not old_private
+    if is_staying_public:
         is_protected(package)
 
     # ckanext-scheming workaround
