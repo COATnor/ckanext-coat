@@ -32,17 +32,23 @@
 ckanext-coat
 =============
 
-.. Put a description of your extension here:
-   What does it do? What features does it have?
-   Consider including some screenshots or embedding a video!
+Core CKAN extension for the COAT (Climate-ecological Observatory for Arctic Tundra) project.
 
+This extension enables:
+
+* **Dataset versioning** - Track and search different versions of datasets
+* **Resource protection** - Prevent modification of protected resources
+* **Consistent resource naming** - Enforce naming standards across datasets
+* **Privacy by default** - New datasets are private until explicitly published
+
+This extension serves as the foundation for the COAT catalog and can be used independently.
+For spatial data and DOI citation support, see ``ckanext-coatcustom``.
 
 ------------
 Requirements
 ------------
 
-For example, you might want to mention here which versions of CKAN this
-extension works with.
+This extension is compatible with CKAN 2.9+.
 
 
 ------------
